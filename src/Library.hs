@@ -141,8 +141,29 @@ empiezaConBat =  (== "bat") . take 3
 --hayCartasConTodosLosTagsMuyLargos :: [Carta] -> Bool
 --hayCartasConTodosLosTagsMuyLargos cartas = (any (\tag -> length tag > 10) . tags) cartas
 
-hayCartasConTodosLosTagsMuyLargos' :: [Carta] -> Bool
-hayCartasConTodosLosTagsMuyLargos' cartas = (any (all ((>10) . length) . tags)) cartas 
+hayCartasConTodosLosTagsMuyLargos :: [Carta] -> Bool
+hayCartasConTodosLosTagsMuyLargos cartas = (any (all ((>10) . length) . tags)) cartas 
 
+-- Con funciones auxiliares
+hayCartasConTodosLosTagsMuyLargos' :: [Carta] -> Bool
+hayCartasConTodosLosTagsMuyLargos' cartas = any tieneTodosTagsLargos cartas 
+
+tagLargo :: String -> Bool
+tagLargo tag = length tag > 10
+
+tieneTodosTagsLargos :: Carta -> Bool
+tieneTodosTagsLargos carta = all tagLargo (tags carta)
 
 -- c. Corregir las cartas a las que le pusieron el tag #alguien en lugar de #alien
+
+-- 1ero. Filtro las cartas con el error de "alguien" en los sus tags (uso filter)
+-- 2dos. Transforma dichas cartas quitando el tag de "alguien" y agregando el tag "alien" (uso map)
+
+aliensCorregidos' :: [Carta] -> [Carta]
+aliensCorregidos' cartas = ( map (ponerTag "alien" . quitarTag "alguien") . filter (elem "alguien" . tags)) cartas
+
+aliensCorregidos :: [Carta] -> [Carta]
+aliensCorregidos cartas = ( map (ponerTag "alien" . quitarTag "alguien") . filter cartasConTagErroneo) cartas
+
+cartasConTagErroneo :: Carta -> Bool
+cartasConTagErroneo carta = "alguien" `elem` tags carta
